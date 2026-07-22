@@ -1,0 +1,4 @@
+.build/
+TextAdder.app/
+.DS_Store
+*.profdata

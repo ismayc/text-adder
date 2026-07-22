@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TextAdder — persistent text overlays for macOS screen sharing</title>
+<meta name="description" content="A macOS menu bar app that floats styled, persistent text labels above every window — lower-thirds, break timers, and quick phrases for screen sharing and teaching.">
+<style>
+  :root {
+    --bg: #f7f7f9; --fg: #1c1c22; --muted: #5c5c6a; --card: #ffffff;
+    --accent: #b58900; --accent-fg: #14140f; --border: #e2e2ea;
+    --code-bg: #ececf2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16161c; --fg: #ececf2; --muted: #9a9aac; --card: #1f1f28;
+      --accent: #ffd60a; --accent-fg: #14140f; --border: #2c2c38;
+      --code-bg: #26262f;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+  header { text-align: center; padding: 72px 0 40px; }
+  .demo {
+    display: inline-block; background: #14140f; border-radius: 14px;
+    padding: 26px 40px; margin-bottom: 28px;
+    font-weight: 800; font-size: clamp(26px, 5vw, 44px); line-height: 1.25;
+    color: #ffd60a; -webkit-text-stroke: 1.5px #000;
+    box-shadow: 0 12px 40px rgba(0,0,0,.25);
+  }
+  .demo small { display: block; font-size: .45em; color: #fff; -webkit-text-stroke: 0; font-weight: 600; }
+  h1 { font-size: clamp(30px, 6vw, 44px); letter-spacing: -.02em; }
+  .tagline { color: var(--muted); font-size: 1.15em; max-width: 620px; margin: 10px auto 0; }
+  .cta { margin-top: 28px; }
+  .cta a {
+    display: inline-block; background: var(--accent); color: var(--accent-fg);
+    font-weight: 700; text-decoration: none; padding: 12px 22px;
+    border-radius: 10px; margin: 0 6px 10px;
+  }
+  .cta a.ghost { background: transparent; color: var(--fg); border: 1.5px solid var(--border); }
+  h2 { font-size: 1.5em; margin: 56px 0 18px; letter-spacing: -.01em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px;
+  }
+  .card h3 { font-size: 1.02em; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: .93em; }
+  code, pre {
+    font: .88em ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--code-bg); border-radius: 6px;
+  }
+  code { padding: 2px 6px; }
+  pre { padding: 16px 18px; overflow-x: auto; margin: 14px 0; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: .95em; }
+  th { color: var(--muted); font-weight: 600; font-size: .85em; text-transform: uppercase; letter-spacing: .04em; }
+  kbd {
+    font: .85em ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-bottom-width: 2px; border-radius: 6px; padding: 2px 7px;
+  }
+  p + p { margin-top: 10px; }
+  .note {
+    border-left: 3px solid var(--accent); background: var(--card);
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 18px 0;
+    color: var(--muted); font-size: .95em;
+  }
+  footer { margin-top: 72px; color: var(--muted); font-size: .9em; text-align: center; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="demo">Break time remaining – 9:41<br><small>← this floats over everything, and it's ticking</small></div>
+    <h1>TextAdder</h1>
+    <p class="tagline">A macOS menu bar app that floats persistent, styled text above every
+    window — lower-thirds, break timers, and quick phrases for screen sharing,
+    teaching, and live demos.</p>
+    <div class="cta">
+      <a href="https://github.com/ismayc/text-adder">View on GitHub</a>
+      <a class="ghost" href="#install">Install</a>
+    </div>
+  </header>
+
+  <h2>Why it exists</h2>
+  <p>Annotation tools like DemoPro, DrawPen, or ZoomIt are great at <em>ephemeral</em>
+  marks — draw an arrow, it fades, move on. TextAdder covers the other half:
+  text you compose once and leave standing. A session title over your Chrome
+  window. A "Q&amp;A time" banner. A break countdown your audience watches tick
+  down. Labels survive app switches, follow you across Spaces, float over
+  full-screen apps, and never steal keyboard focus.</p>
+
+  <h2>Features</h2>
+  <div class="grid">
+    <div class="card"><h3>Multiple labels</h3><p>Independent overlays, each with its own text, style, position, and display. Multi-line, live-updating as you type.</p></div>
+    <div class="card"><h3>Full styling</h3><p>Any installed font, 12–200 pt, bold, text color, letter-outline border, drop shadow, background box, opacity.</p></div>
+    <div class="card"><h3>Style presets</h3><p>Save named looks ("Yellow callout", "Red warning") and apply them to any label in one click.</p></div>
+    <div class="card"><h3>Countdown timers</h3><p>Write <code>Break time remaining - 10:00</code> and press Start — only the time ticks. Click the overlay to pause; a "Paused" pill appears beside it.</p></div>
+    <div class="card"><h3>Phrase library</h3><p>Saved phrases and your 10 most recent texts, one click to swap. A global hotkey cycles phrases from any app.</p></div>
+    <div class="card"><h3>Placement tools</h3><p>Drag anywhere, snap grid + lower-third button, nudge hotkeys, corner grip to resize, multi-monitor picker.</p></div>
+    <div class="card"><h3>Presenter-safe</h3><p>Click-through lock, master show/hide with fade (hotkey or right-click the menu bar icon), auto-hide after N seconds.</p></div>
+    <div class="card"><h3>Keystroke display</h3><p>Optional KeyCastr-style pill showing what you type (needs Accessibility permission).</p></div>
+  </div>
+
+  <h2>Default hotkeys</h2>
+  <table>
+    <tr><th>Keys</th><th>Action</th></tr>
+    <tr><td><kbd>⌃⌥T</kbd></td><td>Show / hide all overlays (fades)</td></tr>
+    <tr><td><kbd>⌃⌥P</kbd></td><td>Swap the selected label to the next saved phrase</td></tr>
+    <tr><td><kbd>⌃⌥</kbd> + arrows</td><td>Nudge the selected label by 10 px</td></tr>
+  </table>
+  <p>The first two are re-recordable in the app, so they can coexist with
+  whatever your other tools claim.</p>
+
+  <h2 id="install">Install</h2>
+  <pre><code>git clone https://github.com/ismayc/text-adder.git
+cd text-adder
+./make-app.sh          # builds TextAdder.app
+open TextAdder.app     # or move it to /Applications first</code></pre>
+  <p>Requires macOS 13+ and the Swift toolchain (Xcode or Command Line Tools).
+  The app lives in the menu bar — click the text-box icon for the control
+  panel, right-click it to hide everything at once.</p>
+
+  <div class="note">Developing without Xcode? <code>./run-tests.sh</code> runs
+  the test suite with Command Line Tools alone by pointing SwiftPM at the
+  CLT's bundled Swift Testing framework.</div>
+
+  <footer>
+    <p>MIT-style use freely · Built with Swift + AppKit ·
+    <a href="https://github.com/ismayc/text-adder">github.com/ismayc/text-adder</a></p>
+  </footer>
+</main>
+</body>
+</html>
