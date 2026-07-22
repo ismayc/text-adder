@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TextAdder — persistent text overlays for macOS screen sharing</title>
 <meta name="description" content="A macOS menu bar app that floats styled, persistent text labels above every window — lower-thirds, break timers, and quick phrases for screen sharing and teaching.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TextAdder — persistent text overlays for macOS screen sharing">
+<meta property="og:description" content="Floating styled text labels above every window — lower-thirds, break timers, and quick phrases for screen sharing and teaching.">
+<meta property="og:url" content="https://ismayc.github.io/text-adder/">
+<meta property="og:image" content="https://ismayc.github.io/text-adder/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ismayc.github.io/text-adder/og-image.png">
 <style>
   :root {
     --bg: #f7f7f9; --fg: #1c1c22; --muted: #5c5c6a; --card: #ffffff;
@@ -120,9 +131,14 @@
   whatever your other tools claim.</p>
 
   <h2 id="install">Install</h2>
+  <p><strong>Easiest:</strong> download <code>TextAdder.dmg</code> from the
+  <a href="https://github.com/ismayc/text-adder/releases/latest">latest release</a>,
+  open it, and drag TextAdder to Applications. The app is ad-hoc signed, so the
+  first launch needs a right-click&nbsp;→&nbsp;Open to get past Gatekeeper.</p>
+  <p><strong>Or build from source:</strong></p>
   <pre><code>git clone https://github.com/ismayc/text-adder.git
 cd text-adder
-./make-app.sh          # builds TextAdder.app
+./make-app.sh          # builds TextAdder.app (or ./make-dmg.sh for a DMG)
 open TextAdder.app     # or move it to /Applications first</code></pre>
   <p>Requires macOS 13+ and the Swift toolchain (Xcode or Command Line Tools).
   The app lives in the menu bar — click the text-box icon for the control

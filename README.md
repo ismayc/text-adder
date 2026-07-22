@@ -11,10 +11,18 @@ session titles, break timers, quick phrases.
 
 ## Run
 
+Download `TextAdder.dmg` from the
+[latest release](https://github.com/ismayc/text-adder/releases/latest), open
+it, and drag TextAdder to Applications (first launch: right-click → Open, since
+the app is ad-hoc signed). Or build from source:
+
 ```sh
 swift run            # quick run from the terminal
-./make-app.sh        # or build TextAdder.app (move to /Applications, double-click)
+./make-app.sh        # build TextAdder.app (move to /Applications, double-click)
+./make-dmg.sh        # package TextAdder.app into a drag-to-install DMG
 ```
+
+Tagging `v*` on GitHub builds the DMG on CI and attaches it to a release.
 
 ## Test
 
