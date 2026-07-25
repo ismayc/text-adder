@@ -57,6 +57,7 @@ launch at login, and a KeyCastr-style keystroke display (requires
 Accessibility permission; macOS prompts on first enable, then relaunch).
 
 **On the overlay itself** — drag anywhere to move; drag the small corner
-grip to resize the text; positions and all settings persist across launches.
+grip to resize the text; press and hold for 2 seconds to pause/resume a
+countdown; positions and all settings persist across launches.
 Overlays float above full-screen apps and follow you across Spaces without
 stealing focus.

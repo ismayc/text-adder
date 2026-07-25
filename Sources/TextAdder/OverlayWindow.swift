@@ -26,11 +26,20 @@ final class OverlayPanel: NSPanel {
     override var canBecomeMain: Bool { false }
 }
 
-/// Container view: the (optional) background box, drag surface, and click
-/// target. A plain click (no drag) fires onClick — used to pause countdowns.
+/// Container view: the (optional) background box, drag surface, and long-press
+/// target. Pausing a countdown takes a deliberate press-and-hold on the text —
+/// a plain click does nothing, so ordinary dragging and resizing never toggle it.
 private final class ItemContainerView: NSView {
-    var onClick: (() -> Void)?
-    private var didDrag = false
+    var onLongPress: (() -> Void)?
+    /// How long the pointer must stay down before the countdown toggles.
+    static let holdSeconds: TimeInterval = 2.0
+    /// Pointer slop allowed before a press turns into a window drag.
+    private static let dragSlop: CGFloat = 4
+
+    private var holdTimer: Timer?
+    private var pressOrigin: NSPoint = .zero
+    private var isDragging = false
+    private let holdIndicator = CALayer()
 
     override var mouseDownCanMoveWindow: Bool { false }
 
@@ -38,11 +47,15 @@ private final class ItemContainerView: NSView {
         super.init(frame: frame)
         wantsLayer = true
         layer?.cornerRadius = 12
+        holdIndicator.backgroundColor = NSColor.white.withAlphaComponent(0.75).cgColor
+        holdIndicator.cornerRadius = 1.5
+        holdIndicator.isHidden = true
+        layer?.addSublayer(holdIndicator)
     }
 
     required init?(coder: NSCoder) { fatalError() }
 
-    /// Swallow events aimed at the label so drag/click land here; the resize
+    /// Swallow events aimed at the label so drag/press land here; the resize
     /// handle keeps its own events.
     override func hitTest(_ point: NSPoint) -> NSView? {
         let view = super.hitTest(point)
@@ -51,16 +64,65 @@ private final class ItemContainerView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        didDrag = false
+        isDragging = false
+        pressOrigin = event.locationInWindow
+        startHold()
     }
 
     override func mouseDragged(with event: NSEvent) {
-        didDrag = true
+        guard !isDragging else { return }
+        // Small movements keep the hold alive; a real drag moves the window.
+        let point = event.locationInWindow
+        let dx = point.x - pressOrigin.x
+        let dy = point.y - pressOrigin.y
+        guard dx * dx + dy * dy > Self.dragSlop * Self.dragSlop else { return }
+        isDragging = true
+        cancelHold()
         window?.performDrag(with: event)
     }
 
     override func mouseUp(with event: NSEvent) {
-        if !didDrag { onClick?() }
+        cancelHold()
+    }
+
+    private func startHold() {
+        cancelHold()
+        showHoldIndicator()
+        let timer = Timer(timeInterval: Self.holdSeconds, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            self.cancelHold()
+            self.onLongPress?()
+        }
+        // .common so the hold keeps ticking while the mouse is being tracked.
+        RunLoop.main.add(timer, forMode: .common)
+        holdTimer = timer
+    }
+
+    private func cancelHold() {
+        holdTimer?.invalidate()
+        holdTimer = nil
+        holdIndicator.removeAllAnimations()
+        holdIndicator.isHidden = true
+    }
+
+    /// Thin bar along the bottom edge that fills over the hold duration, so the
+    /// gesture is discoverable and an accidental press visibly does nothing.
+    private func showHoldIndicator() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        holdIndicator.isHidden = false
+        holdIndicator.frame = NSRect(x: 6, y: 3, width: 0, height: 3)
+        CATransaction.commit()
+
+        let grow = CABasicAnimation(keyPath: "bounds.size.width")
+        grow.fromValue = 0
+        grow.toValue = max(0, bounds.width - 12)
+        grow.duration = Self.holdSeconds
+        grow.fillMode = .forwards
+        grow.isRemovedOnCompletion = false
+        holdIndicator.anchorPoint = NSPoint(x: 0, y: 0.5)
+        holdIndicator.position = NSPoint(x: 6, y: 4.5)
+        holdIndicator.add(grow, forKey: "hold")
     }
 }
 
@@ -69,6 +131,12 @@ private final class ResizeHandle: NSView {
     var onResize: ((CGFloat) -> Void)?
 
     override var mouseDownCanMoveWindow: Bool { false }
+
+    /// Claim the whole press so it never falls through to the container's
+    /// press-and-hold (which would pause the countdown after a resize).
+    override func mouseDown(with event: NSEvent) {}
+
+    override func mouseUp(with event: NSEvent) {}
 
     override func mouseDragged(with event: NSEvent) {
         onResize?(event.deltaX)
@@ -149,8 +217,8 @@ final class OverlayManager {
 
         let handle = ResizeHandle(frame: .zero)
         let id = item.id
-        container.onClick = { [weak self] in
-            // A plain click pauses/resumes this label's countdown.
+        container.onLongPress = { [weak self] in
+            // Press and hold on the text pauses/resumes this label's countdown.
             self?.state.togglePauseCountdown(id)
         }
         handle.onResize = { [weak self] delta in

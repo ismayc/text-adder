@@ -167,7 +167,7 @@ private struct LabelsTab: View {
     private func countdownSection(itemID: UUID) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Countdown").font(.headline)
-            Text("Put a duration in the text, then Start: \"10\" = 10 seconds, \"10:00\" = 10 minutes, \"1:30:00\" = h:mm:ss. Surrounding text stays — e.g. \"Break time remaining - 10:00\" ticks just the time. Click the overlay to pause/resume.")
+            Text("Put a duration in the text, then Start: \"10\" = 10 seconds, \"10:00\" = 10 minutes, \"1:30:00\" = h:mm:ss. Surrounding text stays — e.g. \"Break time remaining - 10:00\" ticks just the time. Press and hold the overlay for 2 seconds to pause/resume.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             HStack {
